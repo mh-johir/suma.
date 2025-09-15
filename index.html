@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clickable Envelope — Open Your Letter</title>
+  <style>
+    :root{
+      --bg:#07393a; /* deep teal */
+      --env-edge:#fff3d6;
+      --env-body:#e9d4b2;
+      --heart:#ff2fb6;
+      --paper:#ffffff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#fff}
+    .stage{width:360px;max-width:92vw;text-align:center;padding:32px 12px}
+
+    .envelope-wrap{position:relative;margin:18px auto;width:320px;height:220px;max-width:88vw;cursor:pointer;perspective:1000px}
+    .env-frame{position:absolute;inset:0;background:var(--env-edge);border-radius:12px;padding:18px;box-shadow:0 12px 20px rgba(0,0,0,.35)}
+    .env-body{position:absolute;inset:12px;background:linear-gradient(180deg,var(--env-body),#d9b98b);border-radius:6px;overflow:hidden;z-index:2}
+
+    .flap{position:absolute;left:50%;transform:translateX(-50%);top:14px;width:72%;height:62%;transform-origin:top center;z-index:3}
+    .flap::before{content:'';position:absolute;left:0;right:0;top:0;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,.2),transparent);clip-path:polygon(0 0,50% 100%,100% 0);border-radius:4px}
+
+    .seal{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);width:28px;height:24px;background:var(--heart);border-radius:6px;display:flex;align-items:center;justify-content:center;z-index:4;box-shadow:0 6px 12px rgba(0,0,0,.25)}
+    .seal::before{content:'❤';color:#fff;font-size:14px}
+
+    .paper{position:absolute;left:50%;top:50%;transform:translate(-50%,50%);width:86%;height:80%;background:var(--paper);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.25);padding:22px 20px;z-index:1;transition:transform 1s ease,opacity .6s;opacity:0}
+    .paper h1{margin:0 0 8px;font-size:22px;color:var(--heart);font-weight:700}
+    .paper p{margin:0;font-size:18px;color:#333}
+
+    .envelope-wrap.open .flap{transform:translateX(-50%) rotateX(-180deg);transition:transform .7s cubic-bezier(.2,.9,.25,1)}
+    .envelope-wrap.open .paper{transform:translate(-50%,-120%);opacity:1;z-index:5}
+    .envelope-wrap.open .seal{transform:translateX(-50%) scale(.2);opacity:0;transition:transform .35s ease,opacity .2s linear}
+
+    .hint{margin-top:18px;font-size:15px;opacity:.95}
+
+    .hearts{position:absolute;inset:0;pointer-events:none}
+    .hearts i{position:absolute;width:18px;height:18px;opacity:.85;font-style:normal;transform:translateY(0);animation:floatUp 3.5s linear infinite}
+    .h1{left:18%;top:6%;animation-delay:0s}
+    .h2{left:72%;top:10%;animation-delay:.6s}
+    .h3{left:44%;top:30%;animation-delay:1.2s}
+    @keyframes floatUp{0%{transform:translateY(0) scale(.9);opacity:.6}50%{opacity:1}100%{transform:translateY(-160px) scale(1.1);opacity:0}}
+
+    @media (max-width:420px){.paper{padding:18px}.stage{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="envelope-wrap" id="env">
+      <div class="env-frame"></div>
+      <div class="env-body"></div>
+      <div class="flap"></div>
+
+      <div class="paper" id="paper" aria-hidden="true">
+        <h1 id="greeting">Dear <span id="recipient">Suma</span>,</h1>
+        <p id="body">Hisa Kha <span>🧹🤌</span></p>
+      </div>
+
+      <div class="seal" id="seal" title="Open letter"></div>
+
+      <div class="hearts" aria-hidden="true">
+        <i class="h1">💖</i>
+        <i class="h2">💞</i>
+        <i class="h3">💕</i>
+      </div>
+    </div>
+
+    <div class="hint">💞 Click the envelope to open your letter 💞</div>
+  </div>
+
+  <script>
+    const env = document.getElementById('env');
+    const paper = document.getElementById('paper');
+    const recipient = document.getElementById('recipient');
+    const body = document.getElementById('body');
+
+    const options = {
+      name: 'Suma',
+      message: 'Hisa Kha 🧹🤌'
+    };
+    recipient.textContent = options.name;
+    body.innerHTML = options.message;
+
+    env.addEventListener('click', () => {
+      env.classList.toggle('open');
+      const open = env.classList.contains('open');
+      paper.setAttribute('aria-hidden', !open);
+    });
+
+    env.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' ') env.click();
+    });
+    env.setAttribute('tabindex','0');
+  </script>
+</body>
+</html>
